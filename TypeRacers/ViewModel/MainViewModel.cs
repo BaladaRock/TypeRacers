@@ -13,20 +13,18 @@ namespace TypeRacers.ViewModel
 
         public CommandHandler ContestCommand { get; }
 
-        public NavigationService ContestNavigation { get; set; }
-
         public CommandHandler PracticeCommand { get; }
 
-        public NavigationService PracticeNavigation { get; set; }
+        public NavigationService Navigation { get; set; }
 
         private void NavigateContest()
         {
-            ContestNavigation.Navigate(new Uri("View/VersusPage.xaml", UriKind.RelativeOrAbsolute));
+            Navigation.Navigate(new Uri("View/VersusPage.xaml", UriKind.RelativeOrAbsolute));
         }
 
         private void NavigatePractice()
         {
-            PracticeNavigation.Navigate(new Uri("View/PracticePage.xaml", UriKind.RelativeOrAbsolute));
+            Navigation.Navigate(new Uri("View/PracticePage.xaml", UriKind.RelativeOrAbsolute));
         }
     }
 }
