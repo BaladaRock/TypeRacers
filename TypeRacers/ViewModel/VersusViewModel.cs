@@ -145,6 +145,7 @@ namespace TypeRacers.ViewModel
                 TriggerPropertyChanged(nameof(CurrentInputText));
             }
         }
+
         public void ReportProgress()
         {
             Model.Model.ReportProgress(Progress);
@@ -177,6 +178,7 @@ namespace TypeRacers.ViewModel
                 ReportProgress();
             }
         }
+
         public void HighlightText()
         {
             if (!Keyboard.IsKeyDown(Key.Back))

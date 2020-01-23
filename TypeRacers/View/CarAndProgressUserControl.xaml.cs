@@ -13,7 +13,6 @@ namespace TypeRacers.View
             InitializeComponent();
         }
 
-
         public static DependencyProperty CAPUCProgressProperty = DependencyProperty.Register("CAPUCProgress", typeof(int), typeof(CarAndProgressUserControl));
 
         public int CAPUCProgress

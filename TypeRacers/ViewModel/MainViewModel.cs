@@ -7,8 +7,8 @@ namespace TypeRacers.ViewModel
     {
         public MainViewModel()
         {
-            ContestCommand = new CommandHandler(() => NavigateContest(), () => true);
-            PracticeCommand = new CommandHandler(() => NavigatePractice(), () => true);
+            ContestCommand = new CommandHandler(NavigateContest, () => true);
+            PracticeCommand = new CommandHandler(NavigatePractice, () => true);
         }
 
         public CommandHandler ContestCommand { get; }
