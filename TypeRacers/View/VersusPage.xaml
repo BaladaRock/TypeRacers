@@ -11,9 +11,14 @@
     Title="Versus"
     Style="{StaticResource AppStyle}">
 
+
     <Page.Resources>
-        <vm:VersusViewModel
-            x:Key="VersusVM" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="VersusVM" />
+            </ResourceDictionary.MergedDictionaries>
+            <local:ReadAndTypeUserControl x:Key="ReadAndTypeUserControl"/>
+        </ResourceDictionary>
     </Page.Resources>
 
     <Grid
@@ -42,40 +47,18 @@
                 <RowDefinition
                     Height="*" />
             </Grid.RowDefinitions>
-
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                
-                <StackPanel Orientation="Horizontal"
-                            Grid.Column="2" Margin="0,0,0,-5">
-                    
-                    <Slider Name="LoadingSlider" VerticalAlignment="Bottom"
-                            Style="{StaticResource LoadingBarStyle}">
-                        
-                    </Slider>
-                    
-                </StackPanel>
-                
-                <StackPanel  Grid.Row="0" Width="auto"
-                        Height="auto"
-                        Orientation="Vertical"
-                             Grid.Column="4"
-                HorizontalAlignment="Right"
-                Margin="10">
-                    <TextBlock
+            <StackPanel
+                Grid.Column="1"
+                Orientation="Vertical"
+                HorizontalAlignment="Right">
+                <TextBlock
                     FontFamily="Times New Roman"
                     FontSize="12"
                     Foreground="White"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center"
                     Text="Searching for opponents...." />
-                    <TextBlock
+                <TextBlock
                     FontFamily="Times New Roman"
                     FontSize="12"
                     VerticalAlignment="Top"
@@ -83,7 +66,7 @@
                     Foreground="White"
                     Text="{Binding OpponentsCount, UpdateSourceTrigger=PropertyChanged,
                             StringFormat='Number of players: {0}'}" />
-                </StackPanel>
+            </StackPanel>
             <Button
                 Grid.Column="0"
                 Name="Back"
@@ -139,7 +122,7 @@
                 RATUCCurrentInputText="{Binding CurrentInputText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                 RATUCBackgroundColor="{Binding InputBackgroundColor, UpdateSourceTrigger=PropertyChanged}"
                 RATUCTypingAlert="{Binding TypingAlert, UpdateSourceTrigger=PropertyChanged}"
-                RATUCSecondsToStart="{Binding SecondsToStart, UpdateSourceTrigger=PropertyChanged}">               
+                RATUCSecondsToStart="{Binding SecondsToStart, UpdateSourceTrigger=PropertyChanged}">
             </local:ReadAndTypeUserControl>
         </Grid>
     </Grid>

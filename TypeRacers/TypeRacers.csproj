@@ -206,10 +206,12 @@
     <Resource Include="Images\pink.png" />
     <Resource Include="Images\purple.png" />
     <Resource Include="Images\yellow.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\loading_bar.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\start.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Images\typer.png" />
   </ItemGroup>
   <ItemGroup>
