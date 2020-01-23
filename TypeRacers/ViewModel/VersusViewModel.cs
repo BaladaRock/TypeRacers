@@ -12,7 +12,6 @@ namespace TypeRacers.ViewModel
 {
     class VersusViewModel : ITextToType, INotifyPropertyChanged
     {
-
         string textToType;
         InputCharacterValidation userInputValidator;
         bool isValid;
@@ -21,24 +20,26 @@ namespace TypeRacers.ViewModel
         int incorrectChars;
         int currentWordIndex;
         private bool alert;
-        static int elapsedTime = 0; // Elapsed time in ms
-
+        readonly Model.Model model;
+        private DateTime startTime;
+        private int numberOfCharactersTyped;
 
         public VersusViewModel()
         {
-            TextToType = Model.Model.GetGeneratedTextToTypeFromServer();
+            model = new Model.Model();
+            TextToType = model.GetGeneratedTextToTypeFromServer();
             userInputValidator = new InputCharacterValidation(TextToType);
-
+            startTime = DateTime.UtcNow;
             // first time getting opponents
-            Opponents = Model.Model.GetOpponents();
-            //start searching for 30 seconds
-            Model.Model.StartSearchingOpponents();
-            Model.Model.SubscribeToSearchingOpponents(UpdateOpponents);
+            Opponents = model.GetOpponents();
+            //check how many players can we display on the screen
+            UpdateShownPlayers();
+            //start searching for 30 seconds and subscribe to timer
+            model.StartSearchingOpponents();
+            model.SubscribeToSearchingOpponents(UpdateOpponents);
             CanUserType = false;
         }
-
-
-
+       
         public IEnumerable<Inline> Inlines
         {
             get => new[] { new Run() { Text = TextToType.Substring(0, spaceIndex) , Foreground = Brushes.Gold},
@@ -49,11 +50,17 @@ namespace TypeRacers.ViewModel
                 };
         }
 
-        public IEnumerable<Tuple<string, string>> Opponents { get; private set; }
+        public IEnumerable<Tuple<string, Tuple<string, string>>> Opponents { get; private set; }
+
+        public Visibility ShowFirstOpponent { get; set; }
+
+        public Visibility ShowSecondOpponent { get; set; }
 
         public int OpponentsCount { get; set; }
 
-        public int ElapsedTime { get; set; }
+        public string SecondsToStart { get; set; }
+
+        public int ElapsedTimeFrom30SecondsTimer { get; set; }
         public bool IsValid
         {
             get => isValid;
@@ -68,9 +75,8 @@ namespace TypeRacers.ViewModel
                 TriggerPropertyChanged(nameof(InputBackgroundColor));
             }
         }
-
         public bool CanUserType { get; set; }
-        public int Progress
+        public int SliderProgress
         {
             get
             {
@@ -79,13 +85,27 @@ namespace TypeRacers.ViewModel
                     return 100;
                 }
 
-                return (spaceIndex * 100 / TextToType.Length);
+                return spaceIndex * 100 / TextToType.Length;
+            }
+        }
+
+        public int Progress
+        {
+            get
+            {
+                if (currentWordIndex == 0)
+                {
+                    return 0;
+                }
+
+                return (numberOfCharactersTyped / 5) * 60 / ((int)(DateTime.UtcNow - startTime).TotalSeconds);
             }
         }
         public int CurrentWordLength
         {
             get => TextToType.Split()[currentWordIndex].Length;//length of current word
         }
+        public bool GetReadyAlert { get; set; }
         public bool AllTextTyped { get; set; }
         //determines if a popup alert should apear, binded in open property of popup xaml
         public bool TypingAlert
@@ -148,8 +168,8 @@ namespace TypeRacers.ViewModel
 
         public void ReportProgress()
         {
-            Model.Model.ReportProgress(Progress);
-            Opponents = Model.Model.GetOpponents();
+            model.ReportProgress(Progress, SliderProgress);
+            Opponents = model.GetOpponents();
             TriggerPropertyChanged(nameof(Opponents));
         }
         public void CheckUserInput(string value)
@@ -165,8 +185,11 @@ namespace TypeRacers.ViewModel
                 }
 
                 userInputValidator = new InputCharacterValidation(TextToType.Substring(spaceIndex));
+                numberOfCharactersTyped += CurrentInputText.Length;
                 textToType = string.Empty;
-                TriggerPropertyChanged(nameof(Progress));//recalculates progress 
+                TriggerPropertyChanged(nameof(SliderProgress));
+                TriggerPropertyChanged(nameof(Progress));
+                //recalculates progress 
                 ReportProgress();
             }
             //checks if current word is the last one
@@ -174,6 +197,7 @@ namespace TypeRacers.ViewModel
             {
                 AllTextTyped = true;
                 TriggerPropertyChanged(nameof(AllTextTyped));
+                TriggerPropertyChanged(nameof(SliderProgress));
                 TriggerPropertyChanged(nameof(Progress));//recalculates progress 
                 ReportProgress();
             }
@@ -218,22 +242,71 @@ namespace TypeRacers.ViewModel
 
             TriggerPropertyChanged(nameof(Inlines)); //new Inlines formed at each char in input
         }
-        public void UpdateOpponents(List<Tuple<string, string>> updatedOpponents)
+
+        public void UpdateOpponents(Tuple<List<Tuple<string, Tuple<string, string>>>, int> updatedOpponentsAndElapsedTime)
         {
-            Opponents = updatedOpponents;
+            Opponents = updatedOpponentsAndElapsedTime.Item1;
+            ElapsedTimeFrom30SecondsTimer = updatedOpponentsAndElapsedTime.Item2;
             OpponentsCount = Opponents.Count() + 1;
+            TriggerPropertyChanged(nameof(ElapsedTimeFrom30SecondsTimer));
             TriggerPropertyChanged(nameof(OpponentsCount));
+            UpdateShownPlayers();
             if (OpponentsCount == 3)
             {
+                TriggerPropertyChanged(nameof(Opponents));
                 //enabling input
-                CanUserType = true;
-                TriggerPropertyChanged(nameof(CanUserType));
+                GetReadyAlert = true;
+                TriggerPropertyChanged(nameof(GetReadyAlert));
+                startTime = startTime.AddSeconds(ElapsedTimeFrom30SecondsTimer / 1000 + 5);
+                var now = DateTime.UtcNow;
+                while ((startTime - now).Seconds < 5)
+                {
+                    SecondsToStart = (startTime - now).Seconds.ToString();
+                    now = DateTime.UtcNow;
+                    if ((startTime - now).Seconds == 0)
+                    {
+                        SecondsToStart = "START!";
+                        TriggerPropertyChanged(nameof(SecondsToStart));
+                        GetReadyAlert = false;
+                        TriggerPropertyChanged(nameof(GetReadyAlert));
+                        CanUserType = true;
+                        TriggerPropertyChanged(nameof(CanUserType));
+                        break;
+                    }
+
+                    TriggerPropertyChanged(nameof(SecondsToStart));
+                }
                 //we stop the timer after 30 seconds
                 return;
             }
-            TriggerPropertyChanged(nameof(Opponents));
 
+            TriggerPropertyChanged(nameof(Opponents));
         }
+
+        public void UpdateShownPlayers()
+        {
+            if (Opponents.Count() == 0)
+            {
+                ShowFirstOpponent = Visibility.Hidden;
+                ShowSecondOpponent = Visibility.Hidden;
+
+            }
+            if (Opponents.Count() == 1)
+            {
+                ShowFirstOpponent = Visibility.Visible;
+                ShowSecondOpponent = Visibility.Hidden;
+            }
+            
+            if(Opponents.Count() == 2)
+            {
+                ShowFirstOpponent = Visibility.Visible;
+                ShowSecondOpponent = Visibility.Visible;
+            }
+
+            TriggerPropertyChanged(nameof(ShowFirstOpponent));
+            TriggerPropertyChanged(nameof(ShowSecondOpponent));
+        }
+
         //INotifyPropertyChanged code - basic 
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -14,6 +14,7 @@ namespace TypeRacers.View
         }
 
         public static DependencyProperty CAPUCProgressProperty = DependencyProperty.Register("CAPUCProgress", typeof(int), typeof(CarAndProgressUserControl));
+        public static DependencyProperty CAPUCSliderProgressProperty = DependencyProperty.Register("CAPUCSliderProgress", typeof(int), typeof(CarAndProgressUserControl));
 
         public int CAPUCProgress
         {
@@ -21,6 +22,15 @@ namespace TypeRacers.View
             set
             {
                 SetValue(CAPUCProgressProperty, value);
+            }
+        }
+
+        public int CAPUCSliderProgress
+        {
+            get { return (int)GetValue(CAPUCSliderProgressProperty); }
+            set
+            {
+                SetValue(CAPUCSliderProgressProperty, value);
             }
         }
 
@@ -47,6 +57,17 @@ namespace TypeRacers.View
             set
             {
                 SetValue(CAPUCSliderStyleProperty, value);
+            }
+        }
+
+        public static DependencyProperty CAPUCCanBeShownProperty = DependencyProperty.Register("CAPUCCanBeShown", typeof(Visibility), typeof(CarAndProgressUserControl));
+
+        public Visibility CAPUCCanBeShown
+        {
+            get { return (Visibility)GetValue(CAPUCCanBeShownProperty); }
+            set
+            {
+                SetValue(CAPUCCanBeShownProperty, value);
             }
         }
     }

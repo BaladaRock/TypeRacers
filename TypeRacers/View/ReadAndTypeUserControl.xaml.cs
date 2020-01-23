@@ -75,6 +75,28 @@ namespace TypeRacers.View
             }
         }
 
+        public readonly static DependencyProperty RATUCSecondsToStartProperty = DependencyProperty.Register("RATUCSecondsToStart", typeof(string), typeof(ReadAndTypeUserControl));
+
+        public string RATUCSecondsToStart
+        {
+            get { return (string)GetValue(RATUCSecondsToStartProperty); }
+            set
+            {
+                SetValue(RATUCSecondsToStartProperty, value);
+            }
+        }
+
+        public readonly static DependencyProperty RATUCGetReadyAlertProperty = DependencyProperty.Register("RATUCGetReadyAlert", typeof(bool), typeof(ReadAndTypeUserControl));
+
+        public bool RATUCGetReadyAlert
+        {
+            get { return (bool)GetValue(RATUCGetReadyAlertProperty); }
+            set
+            {
+                SetValue(RATUCGetReadyAlertProperty, value);
+            }
+        }
+
         public readonly static DependencyProperty RATUCCanTypeProperty = DependencyProperty.Register("RATUCCanType", typeof(bool), typeof(ReadAndTypeUserControl));
 
         public bool RATUCCanType

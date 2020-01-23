@@ -3,34 +3,44 @@
     x:Class="TypeRacers.View.VersusPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:TypeRacers.View"
     xmlns:vm="clr-namespace:TypeRacers.ViewModel"
-    mc:Ignorable="d"
+    MinHeight="450"
+    MinWidth="450"
+    MaxWidth="800"
     Title="Versus"
     Style="{StaticResource AppStyle}">
 
     <Page.Resources>
         <vm:VersusViewModel
-            x:Key="VersusVM"/>
+            x:Key="VersusVM" />
     </Page.Resources>
 
-    <Grid Width="auto"
-          Height="auto"
-          DataContext="{StaticResource VersusVM}">
+    <Grid
+        Height="auto"
+        DataContext="{StaticResource VersusVM}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition
+                Height="auto" />
+            <RowDefinition
+                Height="*" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0"
-                    VerticalAlignment="Center"
-                    Width="auto"
-                    Height="auto">
+        <Grid
+            Grid.Row="0"
+            VerticalAlignment="Center"
+            Width="auto"
+            Height="auto">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition
+                    Width="auto" />
+                <ColumnDefinition
+                    Width="*" />
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="20" />
-                <RowDefinition Height="*" />
+                <RowDefinition
+                    Height="auto" />
+                <RowDefinition
+                    Height="*" />
             </Grid.RowDefinitions>
 
             <Grid>
@@ -74,42 +84,63 @@
                     Text="{Binding OpponentsCount, UpdateSourceTrigger=PropertyChanged,
                             StringFormat='Number of players: {0}'}" />
                 </StackPanel>
+            <Button
+                Grid.Column="0"
+                Name="Back"
+                Click="Back_click"
+                Margin="10 5"
+                Width="70"
+                Height="30"
+                HorizontalAlignment="Left"
+                Style="{StaticResource RoundButtonTemplate}"
+                Background="Orange"
+                Content="Back"
+                BorderBrush="Yellow"
+                BorderThickness="5" />
+            <StackPanel
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
+                VerticalAlignment="Center">
 
+                <local:CarAndProgressUserControl 
+                    CAPUCProgress="{Binding Progress, UpdateSourceTrigger=PropertyChanged}"
+                    CAPUCName="You"
+                    CAPUCSliderProgress="{Binding SliderProgress, UpdateSourceTrigger=PropertyChanged}"
+                    CAPUCSliderStyle="{StaticResource GreenSliderStyle}" />
 
-            </Grid>
-            
-            
-            <StackPanel Grid.Row="2" VerticalAlignment="Center">
-                <local:CarAndProgressUserControl CAPUCProgress="{Binding Progress}"
-                                                 CAPUCName="You"
-                                                 CAPUCSliderStyle="{StaticResource GreenSliderStyle}" />
+                <local:CarAndProgressUserControl
+                    CAPUCCanBeShown="{Binding ShowFirstOpponent}"
+                    CAPUCName="{Binding Opponents[0].Item1, UpdateSourceTrigger=PropertyChanged}"
+                    CAPUCProgress="{Binding Opponents[0].Item2.Item1, UpdateSourceTrigger=PropertyChanged}"
+                    CAPUCSliderProgress="{Binding Opponents[0].Item2.Item2, UpdateSourceTrigger=PropertyChanged}"
+                    CAPUCSliderStyle="{StaticResource OrangeSliderStyle}" />
 
-
-
-                <local:CarAndProgressUserControl CAPUCName="{Binding Opponents[0].Item1, UpdateSourceTrigger=PropertyChanged}"
-                                                 CAPUCProgress="{Binding Opponents[0].Item2, UpdateSourceTrigger=PropertyChanged}"
-                                                 CAPUCSliderStyle="{StaticResource OrangeSliderStyle}" />
-
-
-
-                <local:CarAndProgressUserControl  CAPUCName="{Binding Opponents[1].Item1,  UpdateSourceTrigger=PropertyChanged}"
-                                                  CAPUCProgress="{Binding Opponents[1].Item2,  UpdateSourceTrigger=PropertyChanged}"
-                                                  CAPUCSliderStyle="{StaticResource PinkSliderStyle}" />
-
+                <local:CarAndProgressUserControl
+                    CAPUCCanBeShown="{Binding ShowSecondOpponent}"
+                    CAPUCName="{Binding Opponents[1].Item1,  UpdateSourceTrigger=PropertyChanged}"
+                    CAPUCProgress="{Binding Opponents[1].Item2.Item1, UpdateSourceTrigger=PropertyChanged}"
+                    CAPUCSliderProgress="{Binding Opponents[1].Item2.Item2, UpdateSourceTrigger=PropertyChanged}"
+                    CAPUCSliderStyle="{StaticResource PinkSliderStyle}" />
 
             </StackPanel>
         </Grid>
-        <Grid Grid.Row="1" VerticalAlignment="Center">
-                <local:ReadAndTypeUserControl Width="auto"
-                                              Height="auto"
-                                              Margin="20"
-                                              RATUCInlines="{Binding Inlines}"
-                                              RATUCCanType="{Binding CanUserType}"
-                                              RATUCAllTextTyped="{Binding AllTextTyped}"
-                                              RATUCCurrentInputText="{Binding CurrentInputText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                              RATUCBackgroundColor="{Binding InputBackgroundColor, UpdateSourceTrigger=PropertyChanged}"
-                                              RATUCTypingAlert="{Binding TypingAlert, UpdateSourceTrigger=PropertyChanged}">
-                </local:ReadAndTypeUserControl>
-            </Grid>
+        <Grid
+            Grid.Row="1"
+            VerticalAlignment="Center">
+            <local:ReadAndTypeUserControl
+                x:Name="UserCTRL"
+                Width="auto"
+                Height="auto"
+                Margin="20"
+                RATUCInlines="{Binding Inlines}"
+                RATUCCanType="{Binding CanUserType}"
+                RATUCGetReadyAlert="{Binding GetReadyAlert}"
+                RATUCAllTextTyped="{Binding AllTextTyped}"
+                RATUCCurrentInputText="{Binding CurrentInputText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                RATUCBackgroundColor="{Binding InputBackgroundColor, UpdateSourceTrigger=PropertyChanged}"
+                RATUCTypingAlert="{Binding TypingAlert, UpdateSourceTrigger=PropertyChanged}"
+                RATUCSecondsToStart="{Binding SecondsToStart, UpdateSourceTrigger=PropertyChanged}">               
+            </local:ReadAndTypeUserControl>
+        </Grid>
     </Grid>
 </Page>

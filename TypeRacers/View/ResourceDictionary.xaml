@@ -83,7 +83,7 @@
                             <Image
                                 Width="100"
                                 Height="100"
-                                Margin="0"
+                                Margin="2"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Source="pack://application:,,,/TypeRacers;component/Images/orange.png" />
@@ -107,35 +107,10 @@
                                     Orientation="Horizontal">
                             <Image Width="100"
                                    Height="100"
-                                   Margin="0"
+                                   Margin="2"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"
                                    Source="pack://application:,,,/TypeRacers;component/Images/green.png" />
-
-                        </StackPanel>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style.Setters>
-    </Style>
-
-    <Style x:Key="SliderThumbStyle"
-           TargetType="Thumb">
-        <Style.Setters>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate>
-                        <StackPanel Width="auto"
-                                    Height="35"
-                                    Background="#00000000"
-                                    Orientation="Horizontal">
-                            <Image Width="100"
-                                   Height="100"
-                                   Margin="0"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   Source="pack://application:,,,/TypeRacers;component/Images/green.png" />
-
                         </StackPanel>
                     </ControlTemplate>
                 </Setter.Value>
@@ -155,7 +130,7 @@
                                     Orientation="Horizontal">
                             <Image Width="100"
                                    Height="100"
-                                   Margin="0"
+                                   Margin="2"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"
                                    Source="pack://application:,,,/TypeRacers;component/Images/pink.png" />
@@ -278,8 +253,26 @@
                 Value="auto" />
         <Setter Property="Background"
                 Value="#004c99" />
+   </Style>
+    <Style x:Key="RoundButtonTemplate"
+           TargetType="Button">
+        <Setter Property="Background"
+                Value="DodgerBlue" />
+        <Setter Property="Foreground"
+                Value="White" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border CornerRadius="20"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="1">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center">
 
+                        </ContentPresenter>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
-
-
 </ResourceDictionary>

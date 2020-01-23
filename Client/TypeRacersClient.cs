@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -12,39 +11,31 @@ namespace TypeRacers.Client
     {
         TcpClient client;
         NetworkStream stream;
-        static int interval = 1000; // 1 second
-        static int totalTime = 30000; // 30 seconds or 30000 ms
-        static int elapsedTime = 0; // Elapsed time in ms
         Timer timer;
-        List<Tuple<string, string>> opponents;
-        public delegate void TimerTickHandler(List<Tuple<string, string>> newOpponents);
+        readonly int interval = 1000; // 1 second
+        readonly int totalTime = 30000; // 30 seconds or 30000 ms
+        int elapsedTime = 0; // Elapsed time in ms
+        List<Tuple<string, Tuple<string, string>>> opponents;
+        public delegate void TimerTickHandler(Tuple<List<Tuple<string, Tuple<string, string>>>, int> opponentsAndElapsedTime);
         public event TimerTickHandler OpponentsChanged;
-        public TypeRacersClient()
+        private void SetOpponentsAndElapsedTime(Tuple<List<Tuple<string, Tuple<string, string>>>, int> value)
         {
-            opponents = new List<Tuple<string, string>>();
-       
+            opponents = value.Item1;
+            elapsedTime = value.Item2;
+            OnOpponentsChangedAndTimeChanged(value);
         }
-
-        private List<Tuple<string, string>> Opponents
-        {
-            get => opponents;
-            set
-            {
-                opponents = value;
-                OnOpponentsChanged(opponents);
-            }
-        }
-
         private string LocalPlayerProgress { get; set; }
-        public string Name { get; set; }
+        public static string Name { get; set; }
         public void StartTimerForSearchingOpponents()
         {
             timer = new Timer(interval);
             timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             timer.Enabled = true;
-
         }
-
+        public void NameClient(string username)
+        {
+            Name = username;
+        }
         void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
             timer.Stop();
@@ -57,25 +48,21 @@ namespace TypeRacers.Client
             {
                 // here I am performing the task
                 //getting the opponents each second for 30 seconds from server through Client
-                Opponents = GetOpponentsProgress();
+                SetOpponentsAndElapsedTime(new Tuple<List<Tuple<string, Tuple<string, string>>>, int>(GetOpponentsProgress(), elapsedTime));
                 timer.Enabled = true;
             }
-
             elapsedTime += interval;
-    
         }
-
-        protected void OnOpponentsChanged(List<Tuple<string, string>> newOpponents)
+        protected void OnOpponentsChangedAndTimeChanged(Tuple<List<Tuple<string, Tuple<string, string>>>, int> opponentsAndElapsedTime)
         {
-            if (newOpponents != null)
+            if (opponentsAndElapsedTime != null)
             {
-                OpponentsChanged(newOpponents);
+                OpponentsChanged(opponentsAndElapsedTime);
             }
         }
         public void SendProgressToServer(string progress)
         {
             //connecting to server
-
             client = new TcpClient("localhost", 80);
             stream = client.GetStream();
 
@@ -84,18 +71,26 @@ namespace TypeRacers.Client
             //writing the progress to stream
             byte[] bytesToSend = Encoding.ASCII.GetBytes(LocalPlayerProgress + "$" + Name + "#");
             stream.Write(bytesToSend, 0, bytesToSend.Length);
-            Opponents = GetOpponentsProgress();
+            SetOpponentsAndElapsedTime(new Tuple<List<Tuple<string, Tuple<string, string>>>, int>(GetOpponentsProgress(), elapsedTime));
             stream.Flush();
         }
-
         //receiving the opponents and their progress in a List
-        public List<Tuple<string, string>> GetOpponentsProgress()
+        public List<Tuple<string, Tuple<string, string>>> GetOpponentsProgress()
         {
             //connecting to server
             client = new TcpClient("localhost", 80);
             stream = client.GetStream();
+            string toSend;
             //writing the progress to stream
-            byte[] bytesToSend = Encoding.ASCII.GetBytes(LocalPlayerProgress + "$" + Name + "#");
+            if (LocalPlayerProgress != null)
+            {
+                toSend = LocalPlayerProgress + "$" + Name + "#";
+            }
+            else
+            {
+                toSend = "0&0$" + Name + "#";
+            }
+            byte[] bytesToSend = Encoding.ASCII.GetBytes(toSend);
             stream.Write(bytesToSend, 0, bytesToSend.Length);
 
             try
@@ -109,14 +104,16 @@ namespace TypeRacers.Client
                     read = stream.Read(inStream, 0, inStream.Length);
                     text += Encoding.ASCII.GetString(inStream, text.Length, read);
                 }
-                client.Close();
+
                 var currentOpponents = text.Split('/').ToList();
                 currentOpponents.Remove("#");
-                List<Tuple<string, string>> opponents = new List<Tuple<string, string>>();
+                opponents = new List<Tuple<string, Tuple<string, string>>>();
                 foreach (var v in currentOpponents)
                 {
                     var nameAndProgress = v.Split(':');
-                    opponents.Add(new Tuple<string, string>(nameAndProgress.FirstOrDefault(), nameAndProgress.LastOrDefault()));
+                    var progressAndSliderProgress = nameAndProgress.LastOrDefault().Split('&');
+                    var opponentInfo = new Tuple<string, string>(progressAndSliderProgress.FirstOrDefault(), progressAndSliderProgress.LastOrDefault());
+                    opponents.Add(new Tuple<string, Tuple<string, string>> (nameAndProgress.FirstOrDefault(), opponentInfo));
                 }
 
                 return opponents;
@@ -125,9 +122,7 @@ namespace TypeRacers.Client
             {
                 throw new Exception("Lost connection with server");
             }
-
         }
-
         public string GetMessageFromServer()
         {
             //connecting to server
@@ -136,7 +131,7 @@ namespace TypeRacers.Client
 
             try
             {
-                byte[] bytesToSend = Encoding.ASCII.GetBytes("0" + "$" + Name + "#");
+                byte[] bytesToSend = Encoding.ASCII.GetBytes("0&0" + "$" + Name + "#");
                 stream.Write(bytesToSend, 0, bytesToSend.Length);
 
                 byte[] inStream = new byte[client.ReceiveBufferSize];
@@ -156,6 +151,5 @@ namespace TypeRacers.Client
                 throw new Exception("Lost connection with server");
             }
         }
-
     }
 }

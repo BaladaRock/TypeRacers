@@ -9,9 +9,10 @@
     xmlns:vm="clr-namespace:TypeRacers.ViewModel"
     mc:Ignorable="d"
     Background="#004c99"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
-    Title="Practice">
+    Title="Practice"
+    MinHeight="450"
+    MinWidth="450"
+      MaxWidth="800">
 
     <Page.Resources>
         <vm:PracticeViewModel
@@ -21,15 +22,28 @@
       
             <Grid.RowDefinitions>
                 <RowDefinition Height="20" />
-               <RowDefinition Height="*" />
-                <RowDefinition Height="20" />
+                <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="auto" />
                 <RowDefinition Height="20" />
             </Grid.RowDefinitions>
-            <local:CarAndProgressUserControl Grid.Row="1"
+        <Button Name="Back"                
+                Click="Back_click"
+                Grid.Row="1"
+                Margin="10 5" 
+                Width="70"
+                Height="30"
+                HorizontalAlignment="Left"
+                Style="{StaticResource RoundButtonTemplate}"
+                Background="Orange"
+                Content="Back"
+                BorderBrush="Yellow"
+                BorderThickness="5"/>
+        <local:CarAndProgressUserControl Grid.Row="2"
                                              VerticalAlignment="Center"
-                                             CAPUCName="Your progress"
+                                             CAPUCName="You"
                                              CAPUCProgress="{Binding Progress}"
+                                             CAPUCSliderProgress="{Binding SliderProgress}"
                                              CAPUCSliderStyle="{StaticResource OrangeSliderStyle}" />
 
             <local:ReadAndTypeUserControl Grid.Row="3"

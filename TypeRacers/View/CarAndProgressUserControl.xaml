@@ -11,12 +11,15 @@
 
     <StackPanel Width="auto"
                 Height="auto"
-                DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CarAndProgressUserControl}}">
+                DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CarAndProgressUserControl}}"
+                Visibility="{Binding CAPUCCanBeShown}">
         <Line
             Stroke="#ff9900"
             StrokeDashArray="2 2"
             StrokeThickness="3"
-            X2="10000" />
+              X2="{Binding ActualWidth, Mode=OneWay, 
+               RelativeSource={RelativeSource FindAncestor, 
+               AncestorType={x:Type local:CarAndProgressUserControl}}}" />
 
         <TextBlock Width="auto"
                    Height="auto"
@@ -25,10 +28,10 @@
                    Margin="5"
                    FontSize="15"
                    TextAlignment="Left"
-                   HorizontalAlignment="Left"
+                   HorizontalAlignment="Right"
                    VerticalAlignment="Bottom">
             <TextBlock.Text>
-                <MultiBinding StringFormat="{}{0} :{1} %">
+                <MultiBinding StringFormat="{}{0} : {1} WPM">
                     <Binding Path="CAPUCName" />
                     <Binding Path="CAPUCProgress" />
                 </MultiBinding>
@@ -40,12 +43,14 @@
             Focusable="False"
             Style="{Binding CAPUCSliderStyle}"
             Maximum="100"
-            Value="{Binding CAPUCProgress, Mode=OneWay}" />
+            Value="{Binding CAPUCSliderProgress, Mode=OneWay}" />
 
         <Line Stroke="#ff9900"
-            StrokeDashArray="2 2"
-            StrokeThickness="3"
-            X2="10000" />
+              StrokeDashArray="2 2"
+              StrokeThickness="3"
+              X2="{Binding ActualWidth, Mode=OneWay, 
+               RelativeSource={RelativeSource FindAncestor, 
+               AncestorType={x:Type local:CarAndProgressUserControl}}}" />
 
     </StackPanel>
 

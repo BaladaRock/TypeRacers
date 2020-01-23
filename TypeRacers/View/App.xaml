@@ -1,8 +1,7 @@
 ﻿<Application x:Class="TypeRacers.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:TypeRacers"
-             StartupUri="/View/FirstPage.xaml">
+             StartupUri="/View/MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

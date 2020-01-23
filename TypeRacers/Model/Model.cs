@@ -5,32 +5,33 @@ using TypeRacers.Client;
 
 namespace TypeRacers.Model
 {
-    public static class Model
+    public class Model
     {
         readonly static NetworkHandler networkHandler = new NetworkHandler();
 
-        public static List<Tuple<string, string>> GetOpponents()
+        public List<Tuple<string, Tuple<string, string>>> GetOpponents()
         {
             return networkHandler.GetOpponents();
         }
-        public static void StartSearchingOpponents()
+        public void StartSearchingOpponents()
         {
             networkHandler.StartSearchingOpponents();
         }
-        public static void SubscribeToSearchingOpponents(Action<List<Tuple<string, string>>> updateFunction)
+        public void SubscribeToSearchingOpponents(Action<Tuple<List<Tuple<string, Tuple<string, string>>>, int>> updateOpponentsAndElapsedTime)
         {
-            networkHandler.SubscribeToSearchingOpponentsTimer(updateFunction);
+            networkHandler.SubscribeToSearchingOpponentsTimer(updateOpponentsAndElapsedTime);
         }
-        public static void ReportProgress(int message)
+        public void ReportProgress(int progress, int sliderProgress)
         {
-            networkHandler.SendProgressToServer(message.ToString());
+            string message = progress + "&" + sliderProgress;
+            networkHandler.SendProgressToServer(message);
         }
-        public static string GetGeneratedTextToTypeLocally()
+        public string GetGeneratedTextToTypeLocally()
         {
             return LocalGeneratedText.GetText();
         }
 
-        public static string GetGeneratedTextToTypeFromServer()
+        public string GetGeneratedTextToTypeFromServer()
         {
             return networkHandler.GetTextFromServer();
         }

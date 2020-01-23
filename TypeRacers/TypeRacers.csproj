@@ -51,6 +51,9 @@
     <WarningLevel>4</WarningLevel>
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Images\827502_page_512x512_DZw_icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -82,21 +85,21 @@
     <Compile Include="NetworkHandler.cs" />
     <Compile Include="ViewModel\Commander.cs" />
     <Compile Include="ViewModel\ITextToType.cs" />
-    <Compile Include="ViewModel\FirstViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="ViewModel\PlayerAllocation.cs" />
     <Compile Include="ViewModel\PracticeViewModel.cs" />
     <Compile Include="ViewModel\VersusViewModel.cs" />
     <Compile Include="View\CarAndProgressUserControl.xaml.cs">
       <DependentUpon>CarAndProgressUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ReadAndTypeUserControl.xaml.cs">
       <DependentUpon>ReadAndTypeUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\FirstPage.xaml.cs">
-      <DependentUpon>FirstPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\PracticePage.xaml.cs">
       <DependentUpon>PracticePage.xaml</DependentUpon>
@@ -108,15 +111,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\ReadAndTypeUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\MainPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\FirstPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -206,6 +209,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\loading_bar.png" />
+  </ItemGroup>
+    <Resource Include="Images\typer.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\827502_page_512x512_DZw_icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

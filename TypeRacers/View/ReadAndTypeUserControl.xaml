@@ -16,9 +16,6 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         
-
-
-
         <TextBlock vm:TextBlockExtensions.BindableInlines="{Binding RATUCInlines}"
                    Grid.Row="0"
                    FontFamily="Arial"
@@ -54,8 +51,37 @@
                          Fill="Aquamarine" />
             </Grid>
         </Popup>
-        
-        <TextBox Grid.Row="2"
+        <Popup Name="GetReadyPopUp"
+               IsOpen="{Binding RATUCGetReadyAlert, UpdateSourceTrigger=PropertyChanged}"
+               StaysOpen="False"
+               Placement="Center"
+               VerticalAlignment="Center"
+               HorizontalAlignment="Center"
+               AllowsTransparency="True">
+
+            <Grid Width="auto"
+                  Height="auto">
+                <StackPanel Background="SkyBlue">
+                    <Label Content="GET READY TO START!"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+                    <Image Width="80"
+                           Height="70"
+                           Margin="2"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Source="pack://application:,,,/TypeRacers;component/Images/start.png" />
+                    <Label Name="Timer"
+                           Margin="5"
+                           FontSize="20"
+                           Content="{Binding RATUCSecondsToStart, UpdateSourceTrigger=PropertyChanged}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+                </StackPanel>
+            </Grid>
+        </Popup>
+        <TextBox Name="inputTextbox"
+                 Grid.Row="2"
                  VerticalAlignment="Bottom"
                  Foreground="White"
                  IsEnabled="{Binding RATUCCanType}"

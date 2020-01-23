@@ -10,25 +10,24 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using TypeRacers.ViewModel;
 
 namespace TypeRacers.View
 {
     /// <summary>
-    /// Interaction logic for Practice.xaml
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class PracticePage : Page
+    public partial class MainWindow : Window
     {
-        public PracticePage()
+        public MainWindow()
         {
             InitializeComponent();
+            Loaded += MainWindow_Loaded;
         }
 
-        public void Back_click(object sender, RoutedEventArgs e)
+        public void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new MainPage());
+            Frame.NavigationService.Navigate(new MainPage());
         }
     }
 }

@@ -19,11 +19,16 @@ namespace TypeRacers.ViewModel
         int incorrectChars;
         int currentWordIndex;
         private bool alert;
+        Model.Model model;
+        private DateTime startTime;
+        int numberOfCharactersTyped;
 
         public PracticeViewModel()
         {
-            TextToType = Model.Model.GetGeneratedTextToTypeLocally();
+            model = new Model.Model();
+            TextToType = model.GetGeneratedTextToTypeLocally();
             userInputValidator = new InputCharacterValidation(TextToType);
+            startTime = DateTime.UtcNow;
         }
 
         public IEnumerable<Inline> Inlines
@@ -50,7 +55,8 @@ namespace TypeRacers.ViewModel
                 TriggerPropertyChanged(nameof(InputBackgroundColor));
             }
         }
-        public int Progress
+
+        public int SliderProgress
         {
             get
             {
@@ -59,7 +65,20 @@ namespace TypeRacers.ViewModel
                     return 100;
                 }
 
-                return (spaceIndex * 100 / TextToType.Length);
+                return spaceIndex * 100 / TextToType.Length;
+            }
+        }
+
+        public int Progress
+        {
+            get
+            {
+                if (currentWordIndex == 0)
+                {
+                    return 0;
+                }
+
+                return (numberOfCharactersTyped / 5) * 60/ ((int)(DateTime.UtcNow - startTime).TotalSeconds);
             }
         }
         public int CurrentWordLength
@@ -138,7 +157,9 @@ namespace TypeRacers.ViewModel
                 }
 
                 userInputValidator = new InputCharacterValidation(TextToType.Substring(spaceIndex));
+                numberOfCharactersTyped += CurrentInputText.Length;
                 textToType = string.Empty;
+                TriggerPropertyChanged(nameof(SliderProgress));
                 TriggerPropertyChanged(nameof(Progress));//recalculates progress 
             }
             //checks if current word is the last one
