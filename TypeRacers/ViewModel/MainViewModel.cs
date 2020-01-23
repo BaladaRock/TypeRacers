@@ -13,6 +13,7 @@ namespace TypeRacers.ViewModel
         }
 
         public bool UsernameEntered { get; set; }
+
         public CommandHandler ContestCommand { get; }
 
         public CommandHandler PracticeCommand { get; }
@@ -38,14 +39,18 @@ namespace TypeRacers.ViewModel
 
         private void NavigateContest()
         {
-            if (UsernameEntered)  
-            ContestNavigation.Navigate(new Uri("View/VersusPage.xaml", UriKind.RelativeOrAbsolute));
+            if (UsernameEntered)
+            {
+                ContestNavigation.Navigate(new Uri("View/VersusPage.xaml", UriKind.RelativeOrAbsolute));
+            }
         }
 
         private void NavigatePractice()
         {
-            if (UsernameEntered)  
-            PracticeNavigation.Navigate(new Uri("View/PracticePage.xaml", UriKind.RelativeOrAbsolute));
+            if (UsernameEntered)
+            {
+                PracticeNavigation.Navigate(new Uri("View/PracticePage.xaml", UriKind.RelativeOrAbsolute));
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
