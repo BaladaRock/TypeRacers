@@ -72,7 +72,7 @@
                         Grid.ColumnSpan="3"
                         VerticalAlignment="Center">
 
-                <local:CarAndProgressUserControl CAPUCProgress="{Binding Progress, UpdateSourceTrigger=PropertyChanged}"
+                <local:CarAndProgressUserControl CAPUCProgress="{Binding WPMProgress, UpdateSourceTrigger=PropertyChanged}"
                                                  CAPUCName="You"
                                                  CAPUCSliderProgress="{Binding SliderProgress, UpdateSourceTrigger=PropertyChanged}"
                                                  CAPUCSliderStyle="{StaticResource GreenSliderStyle}" />

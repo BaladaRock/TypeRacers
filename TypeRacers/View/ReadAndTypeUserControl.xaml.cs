@@ -125,11 +125,11 @@ namespace TypeRacers.View
             }
         }
 
-        public readonly static DependencyProperty RATUCStartTimeProperty = DependencyProperty.Register("RATUCStartTime", typeof(DateTime), typeof(ReadAndTypeUserControl));
+        public readonly static DependencyProperty RATUCStartTimeProperty = DependencyProperty.Register("RATUCStartTime", typeof(string), typeof(ReadAndTypeUserControl));
 
-        public DateTime RATUCStartTime
+        public string RATUCStartTime
         {
-            get { return (DateTime)GetValue(RATUCStartTimeProperty); }
+            get { return (string)GetValue(RATUCStartTimeProperty); }
             set
             {
                 SetValue(RATUCStartTimeProperty, value);
@@ -153,11 +153,11 @@ namespace TypeRacers.View
             timer.Start();
             
             secondsToStart = 3;
-            
-            //if (RATUCStartTime != null)
-            //{
-            //    secondsToStart = (DateTime.UtcNow - RATUCStartTime).Seconds;
-            //}
+
+            if (RATUCStartTime != null)
+            {
+                secondsToStart = int.Parse(RATUCStartTime);
+            }
         }
 
        

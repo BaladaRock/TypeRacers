@@ -32,6 +32,7 @@ namespace TypeRacers.ViewModel
             // first time getting opponents
             Opponents = model.GetOpponents();
             StartingTime = model.GetStartingTime();
+            SecondsToGetReady = ((int)(DateTime.Parse(StartingTime) - DateTime.Now).Seconds / 1000).ToString();
             //check how many players can we display on the screen
             UpdateShownPlayers();
 
@@ -67,9 +68,6 @@ namespace TypeRacers.ViewModel
 
 
         public string StartingTime { get; set; }
-        public string SecondsToStart { get; set; }
-
-
 
         public int ElapsedTimeFrom30SecondsTimer { get; set; }
 
@@ -127,7 +125,7 @@ namespace TypeRacers.ViewModel
                     return 0;
                 }
 
-                return (numberOfCharactersTyped / 5) * 60 / ((int)(DateTime.Now - DateTime.Parse(StartingTime)).TotalSeconds);
+                return (numberOfCharactersTyped / 5) * 60 / ((int)(DateTime.Now - DateTime.Parse(StartingTime)).TotalSeconds / 1000);
             }
         }
 
@@ -201,7 +199,7 @@ namespace TypeRacers.ViewModel
         }
         public bool EnableGetReadyAlert { get; set; }
         public bool EnableRestartOrExitAlert { get; set; }
-        public string SecondsToGetReady { get; set; } = "3";
+        public string SecondsToGetReady { get; set; }
         public string SecondsInGame { get; internal set; } = "90 seconds";
         public DateTime StartTime { get; }
 
