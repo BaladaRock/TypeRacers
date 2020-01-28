@@ -12,7 +12,7 @@
                                     Height="35"
                                     Background="#00000000"
                                     Orientation="Horizontal">
-                            <Image Width="100"
+                            <Image Width="{Binding LoadingPercent, UpdateSourceTrigger=PropertyChanged}"
                                    Height="100"
                                    Margin="0 20 0 0"
                                    HorizontalAlignment="Center"

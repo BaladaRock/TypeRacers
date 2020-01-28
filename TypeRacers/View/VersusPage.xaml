@@ -11,14 +11,9 @@
     Title="Versus"
     Style="{StaticResource AppStyle}">
 
-
     <Page.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="VersusVM" />
-            </ResourceDictionary.MergedDictionaries>
-            <local:ReadAndTypeUserControl x:Key="ReadAndTypeUserControl"/>
-        </ResourceDictionary>
+        <vm:VersusViewModel
+            x:Key="VersusVM" />
     </Page.Resources>
 
     <Grid
@@ -49,15 +44,13 @@
             </Grid.RowDefinitions>
             <StackPanel
                 Grid.Column="1"
-                Orientation="Vertical"
+                Orientation="Horizontal"
                 HorizontalAlignment="Right">
-                <TextBlock
-                    FontFamily="Times New Roman"
-                    FontSize="12"
-                    Foreground="White"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Center"
-                    Text="Searching for opponents...." />
+                <Slider Margin="0,0,200,0" Name="LoadingSlider" VerticalAlignment="Top"
+                        Style="{StaticResource LoadingBarStyle}">
+
+                </Slider>
+
                 <TextBlock
                     FontFamily="Times New Roman"
                     FontSize="12"
@@ -66,6 +59,7 @@
                     Foreground="White"
                     Text="{Binding OpponentsCount, UpdateSourceTrigger=PropertyChanged,
                             StringFormat='Number of players: {0}'}" />
+
             </StackPanel>
             <Button
                 Grid.Column="0"

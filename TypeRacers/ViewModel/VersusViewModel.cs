@@ -61,6 +61,23 @@ namespace TypeRacers.ViewModel
         public string SecondsToStart { get; set; }
 
         public int ElapsedTimeFrom30SecondsTimer { get; set; }
+
+        public int LoadingPercent
+        {
+            get => ElapsedTimeFrom30SecondsTimer;
+
+            set
+            {
+                if(ElapsedTimeFrom30SecondsTimer == value)
+                {
+                    return;
+                }
+
+                LoadingPercent = value;
+                TriggerPropertyChanged(nameof(LoadingPercent));
+            }
+        }
+
         public bool IsValid
         {
             get => isValid;
@@ -75,7 +92,9 @@ namespace TypeRacers.ViewModel
                 TriggerPropertyChanged(nameof(InputBackgroundColor));
             }
         }
+
         public bool CanUserType { get; set; }
+
         public int SliderProgress
         {
             get
@@ -101,12 +120,16 @@ namespace TypeRacers.ViewModel
                 return (numberOfCharactersTyped / 5) * 60 / ((int)(DateTime.UtcNow - startTime).TotalSeconds);
             }
         }
+
         public int CurrentWordLength
         {
             get => TextToType.Split()[currentWordIndex].Length;//length of current word
         }
+
         public bool GetReadyAlert { get; set; }
+
         public bool AllTextTyped { get; set; }
+
         //determines if a popup alert should apear, binded in open property of popup xaml
         public bool TypingAlert
         {
@@ -123,6 +146,7 @@ namespace TypeRacers.ViewModel
                 TriggerPropertyChanged(nameof(TypingAlert));
             }
         }
+
         public string InputBackgroundColor
         {
             get
@@ -141,6 +165,7 @@ namespace TypeRacers.ViewModel
         }
 
         public string TextToType { get; }
+
         public string CurrentInputText
         {
             get => textToType;
@@ -172,6 +197,7 @@ namespace TypeRacers.ViewModel
             Opponents = model.GetOpponents();
             TriggerPropertyChanged(nameof(Opponents));
         }
+
         public void CheckUserInput(string value)
         {
             //checks if current word is typed, clears textbox, reintializes remaining text to the validation, sends progress 
