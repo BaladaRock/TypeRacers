@@ -8,13 +8,13 @@ namespace TypeRacers.ViewModel
         private readonly Action toExecute;
         private readonly Func<bool> canExecute;
 
-        public event EventHandler CanExecuteChanged;
-
         public CommandHandler(Action action, Func<bool> canExecute)
         {
             toExecute = action;
             this.canExecute = canExecute;
         }
+
+        public event EventHandler CanExecuteChanged;
 
         public bool CanExecute(object parameter)
         {

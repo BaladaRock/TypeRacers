@@ -19,7 +19,7 @@ namespace TypeRacers.View
             => (MainViewModel)Resources["MainVM"];
 
         private void OnLoaded(object sender, RoutedEventArgs e)
-        {
+        {           
             ViewModel.Navigation = NavigationService.GetNavigationService(this);
         }
     }

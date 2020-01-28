@@ -8,28 +8,23 @@
       mc:Ignorable="d"
       Title="MainPage"
       MinHeight="450"
-      MinWidth="450">
+      MinWidth="410">
 
     <Page.Resources>
         <y:MainViewModel x:Key="MainVM" />
     </Page.Resources>
-    <Grid Background="FloralWhite"
+    <Grid Style="{StaticResource FocusTextBox}"
+          Background="#FF7726B0"
           DataContext="{StaticResource MainVM}">
-
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="10" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="10" />
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="10" />
             <RowDefinition Height="*" />
             <RowDefinition Height="10" />
         </Grid.RowDefinitions>
-        <StackPanel Width="380"
+        <StackPanel MinWidth="360"
                     Background="#FF7726B0"
                     Grid.Column="1"
-                    Grid.Row="1">
+                    Grid.Row="1"                   >
             <TextBlock Name="txt_welcomingmessage"
                        Text="Welcome to Type Racers!"
                        Foreground="Black"
@@ -44,22 +39,23 @@
                    Source="pack://application:,,,/TypeRacers;component/Images/typer.png" />
             <Border CornerRadius="5"
                     Background="AliceBlue"
-                    Margin="10 20">
-                <StackPanel>
+                    Margin="15 20">
+                <StackPanel x:Name="userInput">
                     <Label Content="Please enter a username:"
                            Margin="10"
                            FontSize="24"
                            HorizontalContentAlignment="Center"
                            FontFamily="Pristina"
                            FontWeight="Bold"></Label>
-                    <TextBox x:Name="username"
+                    <TextBox x:Name="username" 
                              Text="{Binding Username, Mode=OneWayToSource}"
                              Foreground="Black"
                              FontSize="20"
                              Background="White"
                              Margin="20"
+                             Focusable="True"
                              FontFamily="Sylfaen"
-                             BorderThickness="2" />
+                             BorderThickness="2"/>
                     <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Center">
                         <Button x:Name="btnRace"
@@ -82,9 +78,7 @@
                                 Command="{Binding PracticeCommand}" />
                     </StackPanel>
                 </StackPanel>
-
             </Border>
         </StackPanel>
-
     </Grid>
 </Page>

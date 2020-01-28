@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Timers;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
+
 namespace TypeRacers.ViewModel
 {
-    class VersusViewModel : ITextToType, INotifyPropertyChanged
+    public class VersusViewModel : ITextToType, INotifyPropertyChanged
     {
         string textToType;
         InputCharacterValidation userInputValidator;
@@ -21,7 +21,6 @@ namespace TypeRacers.ViewModel
         int currentWordIndex;
         private bool alert;
         readonly Model.Model model;
-        private DateTime startTime;
         private int numberOfCharactersTyped;
 
         public VersusViewModel()
@@ -29,18 +28,26 @@ namespace TypeRacers.ViewModel
             model = new Model.Model();
             TextToType = model.GetGeneratedTextToTypeFromServer();
             userInputValidator = new InputCharacterValidation(TextToType);
-            startTime = DateTime.UtcNow;
+            StartTime = DateTime.UtcNow;
             // first time getting opponents
             Opponents = model.GetOpponents();
+            StartingTime = model.GetStartingTime();
             //check how many players can we display on the screen
             UpdateShownPlayers();
+
+            ExitProgramCommand = new CommandHandler(() => ExitProgram(), () => true);
+            RestartSearchingOpponentsCommand = new CommandHandler(() => RestartSearchingOpponents(), () => true);
             //start searching for 30 seconds and subscribe to timer
             model.StartSearchingOpponents();
             model.SubscribeToSearchingOpponents(UpdateOpponents);
+
             CanUserType = false;
         }
-       
-        public IEnumerable<Inline> Inlines
+
+        public CommandHandler RestartSearchingOpponentsCommand { get; }
+        public CommandHandler ExitProgramCommand { get; }
+
+        public IEnumerable<Inline> TextToTypeStyles
         {
             get => new[] { new Run() { Text = TextToType.Substring(0, spaceIndex) , Foreground = Brushes.Gold},
                 new Run() { Text = TextToType.Substring(spaceIndex, correctChars), Foreground = Brushes.Gold, TextDecorations = TextDecorations.Underline},
@@ -50,7 +57,7 @@ namespace TypeRacers.ViewModel
                 };
         }
 
-        public IEnumerable<Tuple<string, Tuple<string, string>>> Opponents { get; private set; }
+        public IEnumerable<Tuple<string, Tuple<string, string, int>>> Opponents { get; private set; }
 
         public Visibility ShowFirstOpponent { get; set; }
 
@@ -58,7 +65,11 @@ namespace TypeRacers.ViewModel
 
         public int OpponentsCount { get; set; }
 
+
+        public string StartingTime { get; set; }
         public string SecondsToStart { get; set; }
+
+
 
         public int ElapsedTimeFrom30SecondsTimer { get; set; }
 
@@ -88,7 +99,7 @@ namespace TypeRacers.ViewModel
                     return;
 
                 isValid = value;
-                TriggerPropertyChanged(nameof(IsValid));
+                TriggerPropertyChanged(nameof(InputValidation));
                 TriggerPropertyChanged(nameof(InputBackgroundColor));
             }
         }
@@ -107,8 +118,7 @@ namespace TypeRacers.ViewModel
                 return spaceIndex * 100 / TextToType.Length;
             }
         }
-
-        public int Progress
+        public int WPMProgress
         {
             get
             {
@@ -117,7 +127,7 @@ namespace TypeRacers.ViewModel
                     return 0;
                 }
 
-                return (numberOfCharactersTyped / 5) * 60 / ((int)(DateTime.UtcNow - startTime).TotalSeconds);
+                return (numberOfCharactersTyped / 5) * 60 / ((int)(DateTime.Now - DateTime.Parse(StartingTime)).TotalSeconds);
             }
         }
 
@@ -163,7 +173,6 @@ namespace TypeRacers.ViewModel
                 return default;
             }
         }
-
         public string TextToType { get; }
 
         public string CurrentInputText
@@ -178,7 +187,7 @@ namespace TypeRacers.ViewModel
                 textToType = value;
 
                 //validate current word
-                IsValid = userInputValidator.ValidateWord(CurrentInputText, CurrentInputText.Length);
+                InputValidation = userInputValidator.ValidateWord(CurrentInputText, CurrentInputText.Length);
 
                 CheckUserInput(textToType);
 
@@ -190,10 +199,15 @@ namespace TypeRacers.ViewModel
                 TriggerPropertyChanged(nameof(CurrentInputText));
             }
         }
+        public bool EnableGetReadyAlert { get; set; }
+        public bool EnableRestartOrExitAlert { get; set; }
+        public string SecondsToGetReady { get; set; } = "3";
+        public string SecondsInGame { get; internal set; } = "90 seconds";
+        public DateTime StartTime { get; }
 
         public void ReportProgress()
         {
-            model.ReportProgress(Progress, SliderProgress);
+            model.ReportProgress(WPMProgress, SliderProgress);
             Opponents = model.GetOpponents();
             TriggerPropertyChanged(nameof(Opponents));
         }
@@ -214,17 +228,17 @@ namespace TypeRacers.ViewModel
                 numberOfCharactersTyped += CurrentInputText.Length;
                 textToType = string.Empty;
                 TriggerPropertyChanged(nameof(SliderProgress));
-                TriggerPropertyChanged(nameof(Progress));
+                TriggerPropertyChanged(nameof(WPMProgress));
                 //recalculates progress 
                 ReportProgress();
             }
             //checks if current word is the last one
-            if (IsValid && textToType.Length + spaceIndex == TextToType.Length)
+            if (InputValidation && textToType.Length + spaceIndex == TextToType.Length)
             {
                 AllTextTyped = true;
                 TriggerPropertyChanged(nameof(AllTextTyped));
                 TriggerPropertyChanged(nameof(SliderProgress));
-                TriggerPropertyChanged(nameof(Progress));//recalculates progress 
+                TriggerPropertyChanged(nameof(WPMProgress));//recalculates progress 
                 ReportProgress();
             }
         }
@@ -266,10 +280,22 @@ namespace TypeRacers.ViewModel
                 }
             }
 
-            TriggerPropertyChanged(nameof(Inlines)); //new Inlines formed at each char in input
+            TriggerPropertyChanged(nameof(TextToTypeStyles)); //new Inlines formed at each char in input
         }
+        private void RestartSearchingOpponents()
+        {
+            EnableRestartOrExitAlert = false;
+            TriggerPropertyChanged(nameof(EnableRestartOrExitAlert));
+            model.StartSearchingOpponents();
+            model.SubscribeToSearchingOpponents(UpdateOpponents);
 
-        public void UpdateOpponents(Tuple<List<Tuple<string, Tuple<string, string>>>, int> updatedOpponentsAndElapsedTime)
+        }
+        private void ExitProgram()
+        {
+            Application.Current.Shutdown();
+        }
+        public void UpdateOpponents(Tuple<List<Tuple<string, Tuple<string, string, int>>>, int> updatedOpponentsAndElapsedTime)
+
         {
             Opponents = updatedOpponentsAndElapsedTime.Item1;
             ElapsedTimeFrom30SecondsTimer = updatedOpponentsAndElapsedTime.Item2;
@@ -277,31 +303,28 @@ namespace TypeRacers.ViewModel
             TriggerPropertyChanged(nameof(ElapsedTimeFrom30SecondsTimer));
             TriggerPropertyChanged(nameof(OpponentsCount));
             UpdateShownPlayers();
-            if (OpponentsCount == 3)
+
+            if (DateTime.Now.ToString("h:mm:ss") == StartingTime && OpponentsCount < 2)
+            {
+                EnableRestartOrExitAlert = true;
+                TriggerPropertyChanged(nameof(EnableRestartOrExitAlert));
+            }
+            if (OpponentsCount == 3 || DateTime.Now.ToString("h:mm:ss") == StartingTime && OpponentsCount == 2)
             {
                 TriggerPropertyChanged(nameof(Opponents));
                 //enabling input
-                GetReadyAlert = true;
-                TriggerPropertyChanged(nameof(GetReadyAlert));
-                startTime = startTime.AddSeconds(ElapsedTimeFrom30SecondsTimer / 1000 + 5);
-                var now = DateTime.UtcNow;
-                while ((startTime - now).Seconds < 5)
-                {
-                    SecondsToStart = (startTime - now).Seconds.ToString();
-                    now = DateTime.UtcNow;
-                    if ((startTime - now).Seconds == 0)
-                    {
-                        SecondsToStart = "START!";
-                        TriggerPropertyChanged(nameof(SecondsToStart));
-                        GetReadyAlert = false;
-                        TriggerPropertyChanged(nameof(GetReadyAlert));
-                        CanUserType = true;
-                        TriggerPropertyChanged(nameof(CanUserType));
-                        break;
-                    }
 
-                    TriggerPropertyChanged(nameof(SecondsToStart));
+                EnableGetReadyAlert = true;
+
+                int.TryParse(SecondsToGetReady, out int seconds);
+
+                if (seconds < 0)
+                {
+                    EnableGetReadyAlert = false;
                 }
+
+                TriggerPropertyChanged(nameof(EnableGetReadyAlert));
+
                 //we stop the timer after 30 seconds
                 return;
             }
@@ -309,6 +332,10 @@ namespace TypeRacers.ViewModel
             TriggerPropertyChanged(nameof(Opponents));
         }
 
+        public void CheckIfRaceCanStart()
+        {
+
+        }
         public void UpdateShownPlayers()
         {
             if (Opponents.Count() == 0)
@@ -322,8 +349,8 @@ namespace TypeRacers.ViewModel
                 ShowFirstOpponent = Visibility.Visible;
                 ShowSecondOpponent = Visibility.Hidden;
             }
-            
-            if(Opponents.Count() == 2)
+
+            if (Opponents.Count() == 2)
             {
                 ShowFirstOpponent = Visibility.Visible;
                 ShowSecondOpponent = Visibility.Visible;

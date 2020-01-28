@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Server;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -11,17 +13,28 @@ namespace TypeRacers.Server
     {
         private bool newClient;
         private TcpListener server;
-        private Dictionary<string, Tuple<string, string>> players;
         private NetworkStream networkStream;
         private string currentClient;
-        //to avoid generating different texts from users in same competition
-        public static string CompetitionText { get; } = ServerGeneratedText.GetText();
+        private List<Playroom> playrooms;
+        private Playroom currentPlayroom;
+        int playroomCount = 0;
+        int currentPlayerPlayroomNumber;
+        int maxPlayroomSize = 3;
 
+
+        //to avoid generating different texts from users in same competition
+
+
+        public static string CompetitionText { get; } = ServerGeneratedText.GetText();
         public void Setup()
         {
+
             server = new TcpListener(IPAddress.IPv6Any, 80);
             server.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, false);
-            players = new Dictionary<string, Tuple<string, string>>();
+            playrooms = new List<Playroom>();
+            playrooms.Add(new Playroom());
+            currentPlayroom = playrooms.Last();
+
 
             try
             {
@@ -40,6 +53,7 @@ namespace TypeRacers.Server
         {
             while (true)
             {
+
                 TcpClient client = server.AcceptTcpClient();
 
                 try
@@ -49,7 +63,9 @@ namespace TypeRacers.Server
                     //reads from stream
                     byte[] buffer = new byte[client.ReceiveBufferSize];
                     int bytesRead = networkStream.Read(buffer, 0, buffer.Length);
+
                     string dataReceived = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+
                     //solution to get get complete messages
                     while (!dataReceived[bytesRead - 1].Equals('#'))
                     {
@@ -57,12 +73,14 @@ namespace TypeRacers.Server
                         dataReceived += Encoding.ASCII.GetString(buffer, dataReceived.Length, bytesRead);
                     }
 
-                    CheckUsername(dataReceived, players);
+
+                    CheckClientReceievedData(dataReceived);
                     //check if reading from the stream has been done on the other end in order to close client
                     if (networkStream.DataAvailable)
-                    { 
-                        client.Close(); 
+                    {
+                        client.Close();
                     }
+
                     Console.WriteLine("info: " + dataReceived);
                     Console.WriteLine("Disconnected client");
                 }
@@ -73,13 +91,13 @@ namespace TypeRacers.Server
             }
         }
 
-        private void CheckNewClient()
+        private void CheckNewClient(int roomNumber)
         {
             if (newClient)
             {
-                byte[] broadcastBytes = Encoding.ASCII.GetBytes(CompetitionText + "#"); //generates random text from text document
+                byte[] broadcastBytes = Encoding.ASCII.GetBytes(CompetitionText + "$" + roomNumber + "%" + currentPlayroom.StartingTime + "#"); //generates random text from text document
                 networkStream.Write(broadcastBytes, 0, broadcastBytes.Length);//send the text to connected client
-                //SendOpponents();//sending current connected opponents to connected client
+
             }
             else
             {
@@ -90,11 +108,13 @@ namespace TypeRacers.Server
         private void SendOpponents()
         {
             string opponents = string.Empty;
-            foreach (var a in players)
+
+            foreach (var a in playrooms[currentPlayerPlayroomNumber].Players)
             {
                 if (!a.Key.ToString().Equals(currentClient))
                 {
-                    opponents += a.Key + ":" + a.Value.Item1 + "&" + a.Value.Item2 + "/";
+                    opponents += a.Key + ":" + a.Value.Item1 + "&" + a.Value.Item2 + "&" + a.Value.Item3 + "/";
+
                 }
             }
 
@@ -102,29 +122,66 @@ namespace TypeRacers.Server
             networkStream.Write(broadcastBytes, 0, broadcastBytes.Length);
         }
 
-
         //this method determines if a player is new or is already playing and is just sending progress
-        private void CheckUsername(string dataReceived, Dictionary<string, Tuple<string, string>> players)
+
+        private void CheckClientReceievedData(string dataReceived)
         {
-            string progressAndSliderProgress = dataReceived.Substring(0, dataReceived.IndexOf('$'));
-            Tuple<string, string> clientInfo = new Tuple<string, string>(progressAndSliderProgress.Substring(0, progressAndSliderProgress.IndexOf('&')), progressAndSliderProgress.Substring(progressAndSliderProgress.IndexOf('&') + 1));
+
+            //progress and slider progress
+            string progress = dataReceived.Substring(0, dataReceived.IndexOf('$'));
+
+            var progressInfoAndPlayerRoom = progress.Split('&');
+
+            //1 progress, 2 sliderprogress, 3 current client playroom
+            Tuple<string, string, int> clientInfo = new Tuple<string, string, int>(progressInfoAndPlayerRoom[0],
+                progressInfoAndPlayerRoom[1], Convert.ToInt32(progressInfoAndPlayerRoom[2]));
+
+
             string username = dataReceived.Substring(dataReceived.IndexOf('$') + 1);
             currentClient = username.Substring(0, username.Length - 1);
-            Console.WriteLine(username + " connected");
 
-            if (players.ContainsKey(currentClient))
+            if (currentClient == string.Empty)
             {
-                newClient = false;
-                players[currentClient] = clientInfo;
-            }
-            else
-            {
-                newClient = true;
-                players.Add(currentClient, clientInfo);
+                return;
             }
 
-            CheckNewClient();
+            currentPlayerPlayroomNumber = clientInfo.Item3;
+
+            CheckCurrentPlayroom(currentClient, currentPlayerPlayroomNumber, clientInfo);
+
+        }
+
+        public Playroom CreateNewPlayroom()
+        {
+            playroomCount++;
+            var newPlayroom = new Playroom();
+            newPlayroom.PlayroomNumber = playroomCount;
+            playrooms.Add(newPlayroom);
+            return playrooms.Last();
+        }
+
+        public void CheckCurrentPlayroom(string currrentClient, int roomNumber, Tuple<string, string, int> clientInfo)
+        {
+            currentPlayroom = playrooms[roomNumber];
+
+
+            if (currentPlayroom.PlayroomSize == maxPlayroomSize && !currentPlayroom.ExistsInPlayroom(currentClient))
+            {
+                if (playrooms.Last().PlayroomSize == maxPlayroomSize)
+                {
+
+                    currentPlayroom = CreateNewPlayroom();
+                }
+                else
+                {
+
+                    currentPlayroom = playrooms.Last();
+                }
+
+            }
+            newClient = currentPlayroom.AddPlayersToRoom(currrentClient, clientInfo);
+            CheckNewClient(currentPlayroom.PlayroomNumber);
+
         }
     }
 }
-

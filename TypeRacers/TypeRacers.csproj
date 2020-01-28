@@ -29,6 +29,8 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -54,6 +56,7 @@
   <PropertyGroup>
     <ApplicationIcon>Images\827502_page_512x512_DZw_icon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -92,9 +95,7 @@
     <Compile Include="View\CarAndProgressUserControl.xaml.cs">
       <DependentUpon>CarAndProgressUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="View\MainWindow.xaml.cs" />
     <Compile Include="View\ReadAndTypeUserControl.xaml.cs">
       <DependentUpon>ReadAndTypeUserControl.xaml</DependentUpon>
     </Compile>
@@ -104,6 +105,9 @@
     <Compile Include="View\PracticePage.xaml.cs">
       <DependentUpon>PracticePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\TimerReadyPopupCustomControl.xaml.cs">
+      <DependentUpon>TimerReadyPopupCustomControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\VersusPage.xaml.cs">
       <DependentUpon>VersusPage.xaml</DependentUpon>
     </Compile>
@@ -112,8 +116,8 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\MainWindow.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\ReadAndTypeUserControl.xaml">
       <SubType>Designer</SubType>
@@ -137,6 +141,10 @@
     <Page Include="View\ResourceDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\TimerReadyPopupCustomControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\VersusPage.xaml">
       <SubType>Designer</SubType>
@@ -216,6 +224,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\827502_page_512x512_DZw_icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\green.png" />
+    <Resource Include="Images\pink.png" />
+    <Resource Include="Images\yellow.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

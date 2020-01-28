@@ -13,9 +13,8 @@
                 Height="auto"
                 DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CarAndProgressUserControl}}"
                 Visibility="{Binding CAPUCCanBeShown}">
-        <Line
-            Stroke="#ff9900"
-            StrokeDashArray="2 2"
+        <Line Stroke="#FF13110E"
+              StrokeDashArray="2 2"
             StrokeThickness="3"
               X2="{Binding ActualWidth, Mode=OneWay, 
                RelativeSource={RelativeSource FindAncestor, 
@@ -23,13 +22,14 @@
 
         <TextBlock Width="auto"
                    Height="auto"
-                   FontFamily="Arial"
-                   Foreground="White"
+                   FontFamily="Times New Roman"
+                   Foreground="#FF000A74"
                    Margin="5"
-                   FontSize="15"
+                   FontSize="20"
                    TextAlignment="Left"
                    HorizontalAlignment="Right"
-                   VerticalAlignment="Bottom">
+                   VerticalAlignment="Bottom"
+                   FontWeight="Bold">
             <TextBlock.Text>
                 <MultiBinding StringFormat="{}{0} : {1} WPM">
                     <Binding Path="CAPUCName" />
@@ -39,13 +39,14 @@
         </TextBlock>
         <Slider Width="auto"
                 Height="auto"
+                Margin="0,0,0,20"
                 IsHitTestVisible="False"
             Focusable="False"
             Style="{Binding CAPUCSliderStyle}"
             Maximum="100"
             Value="{Binding CAPUCSliderProgress, Mode=OneWay}" />
-
-        <Line Stroke="#ff9900"
+ 
+        <Line Stroke="#FF13110E"
               StrokeDashArray="2 2"
               StrokeThickness="3"
               X2="{Binding ActualWidth, Mode=OneWay, 
