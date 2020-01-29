@@ -43,7 +43,7 @@ namespace TypeRacers.ViewModel
         {
             if (UsernameEntered)
             {
-                ContestNavigation.Navigate(new Uri("View/VersusPage.xaml", UriKind.RelativeOrAbsolute));
+                Navigation.Navigate(new Uri("View/VersusPage.xaml", UriKind.RelativeOrAbsolute));
             }
             else
             {
@@ -56,7 +56,7 @@ namespace TypeRacers.ViewModel
         {
             if (UsernameEntered)
             {
-                PracticeNavigation.Navigate(new Uri("View/PracticePage.xaml", UriKind.RelativeOrAbsolute));
+                Navigation.Navigate(new Uri("View/PracticePage.xaml", UriKind.RelativeOrAbsolute));
             }
             else
             {

@@ -46,6 +46,7 @@ namespace TypeRacers.ViewModel
         }
 
         public CommandHandler RestartSearchingOpponentsCommand { get; }
+
         public CommandHandler ExitProgramCommand { get; }
 
         public IEnumerable<Inline> TextToTypeStyles
@@ -73,11 +74,11 @@ namespace TypeRacers.ViewModel
 
         public int LoadingPercent
         {
-            get => ElapsedTimeFrom30SecondsTimer;
+            get => (90 - ElapsedTimeFrom30SecondsTimer) * 10;
 
             set
             {
-                if(ElapsedTimeFrom30SecondsTimer == value)
+                if (ElapsedTimeFrom30SecondsTimer == value)
                 {
                     return;
                 }
@@ -87,7 +88,7 @@ namespace TypeRacers.ViewModel
             }
         }
 
-        public bool IsValid
+        public bool InputValidation
         {
             get => isValid;
 
@@ -116,6 +117,7 @@ namespace TypeRacers.ViewModel
                 return spaceIndex * 100 / TextToType.Length;
             }
         }
+
         public int WPMProgress
         {
             get
@@ -171,6 +173,7 @@ namespace TypeRacers.ViewModel
                 return default;
             }
         }
+
         public string TextToType { get; }
 
         public string CurrentInputText
@@ -197,10 +200,15 @@ namespace TypeRacers.ViewModel
                 TriggerPropertyChanged(nameof(CurrentInputText));
             }
         }
+
         public bool EnableGetReadyAlert { get; set; }
+
         public bool EnableRestartOrExitAlert { get; set; }
+
         public string SecondsToGetReady { get; set; }
+
         public string SecondsInGame { get; internal set; } = "90 seconds";
+
         public DateTime StartTime { get; }
 
         public void ReportProgress()
@@ -280,18 +288,20 @@ namespace TypeRacers.ViewModel
 
             TriggerPropertyChanged(nameof(TextToTypeStyles)); //new Inlines formed at each char in input
         }
+
         private void RestartSearchingOpponents()
         {
             EnableRestartOrExitAlert = false;
             TriggerPropertyChanged(nameof(EnableRestartOrExitAlert));
             model.StartSearchingOpponents();
             model.SubscribeToSearchingOpponents(UpdateOpponents);
-
         }
+
         private void ExitProgram()
         {
             Application.Current.Shutdown();
         }
+
         public void UpdateOpponents(Tuple<List<Tuple<string, Tuple<string, string, int>>>, int> updatedOpponentsAndElapsedTime)
 
         {
@@ -334,6 +344,7 @@ namespace TypeRacers.ViewModel
         {
 
         }
+
         public void UpdateShownPlayers()
         {
             if (Opponents.Count() == 0)
